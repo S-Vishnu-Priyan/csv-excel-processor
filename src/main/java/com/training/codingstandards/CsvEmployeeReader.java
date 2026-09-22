@@ -18,16 +18,16 @@ public class CsvEmployeeReader {
         try (InputStream inputStream = openInputStream(csvPath);
              InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
              CSVParser parser = CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build().parse(reader)) {
-            for (CSVRecord record : parser) {
+            for (CSVRecord csvRecord : parser) {
                 Employee recordEmployee = new Employee();
-                recordEmployee.setEmpId(record.get("empId"));
-                recordEmployee.setName(record.get("name"));
-                recordEmployee.setEmail(record.get("email"));
-                recordEmployee.setDepartment(record.get("department"));
-                recordEmployee.setSalary(Double.parseDouble(record.get("salary")));
-                recordEmployee.setYearsOfService(Integer.parseInt(record.get("yearsOfService")));
-                recordEmployee.setCountry(record.get("country"));
-                recordEmployee.setManagerEmail(record.get("managerEmail"));
+                recordEmployee.setEmpId(csvRecord.get("empId"));
+                recordEmployee.setName(csvRecord.get("name"));
+                recordEmployee.setEmail(csvRecord.get("email"));
+                recordEmployee.setDepartment(csvRecord.get("department"));
+                recordEmployee.setSalary(Double.parseDouble(csvRecord.get("salary")));
+                recordEmployee.setYearsOfService(Integer.parseInt(csvRecord.get("yearsOfService")));
+                recordEmployee.setCountry(csvRecord.get("country"));
+                recordEmployee.setManagerEmail(csvRecord.get("managerEmail"));
                 employees.add(recordEmployee);
             }
         } catch (IOException | IllegalArgumentException e) {
