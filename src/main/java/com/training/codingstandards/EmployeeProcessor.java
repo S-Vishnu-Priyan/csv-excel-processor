@@ -67,10 +67,10 @@ public class EmployeeProcessor {
 
     private double calculateTax(double salary, String country) {
         if (Objects.equals(country, "IN")) {
-            return salary * (salary > 100000 ? 0.30 : salary > 70000 ? 0.20 : 0.10);
+            return salary * indiaTaxRate(salary);
         }
         if (Objects.equals(country, "US")) {
-            return salary * (salary > 100000 ? 0.28 : salary > 70000 ? 0.18 : 0.12);
+            return salary * usTaxRate(salary);
         }
         if (Objects.equals(country, "SG")) {
             return salary * 0.15;
@@ -79,6 +79,20 @@ public class EmployeeProcessor {
             return salary * 0.20;
         }
         return salary * 0.10;
+    }
+
+    private double indiaTaxRate(double salary) {
+        if (salary > 100000) {
+            return 0.30;
+        }
+        return salary > 70000 ? 0.20 : 0.10;
+    }
+
+    private double usTaxRate(double salary) {
+        if (salary > 100000) {
+            return 0.28;
+        }
+        return salary > 70000 ? 0.18 : 0.12;
     }
 
     private String grade(double salary, int years, String department) {

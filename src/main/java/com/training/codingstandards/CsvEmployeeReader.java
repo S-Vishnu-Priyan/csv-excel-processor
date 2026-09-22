@@ -19,16 +19,16 @@ public class CsvEmployeeReader {
              InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
              CSVParser parser = CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build().parse(reader)) {
             for (CSVRecord record : parser) {
-                Employee employee = new Employee();
-                employee.setEmpId(record.get("empId"));
-                employee.setName(record.get("name"));
-                employee.setEmail(record.get("email"));
-                employee.setDepartment(record.get("department"));
-                employee.setSalary(Double.parseDouble(record.get("salary")));
-                employee.setYearsOfService(Integer.parseInt(record.get("yearsOfService")));
-                employee.setCountry(record.get("country"));
-                employee.setManagerEmail(record.get("managerEmail"));
-                employees.add(employee);
+                Employee recordEmployee = new Employee();
+                recordEmployee.setEmpId(record.get("empId"));
+                recordEmployee.setName(record.get("name"));
+                recordEmployee.setEmail(record.get("email"));
+                recordEmployee.setDepartment(record.get("department"));
+                recordEmployee.setSalary(Double.parseDouble(record.get("salary")));
+                recordEmployee.setYearsOfService(Integer.parseInt(record.get("yearsOfService")));
+                recordEmployee.setCountry(record.get("country"));
+                recordEmployee.setManagerEmail(record.get("managerEmail"));
+                employees.add(recordEmployee);
             }
         } catch (IOException | IllegalArgumentException e) {
             throw new IllegalStateException("Could not read employee CSV", e);
