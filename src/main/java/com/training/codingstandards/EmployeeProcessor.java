@@ -11,144 +11,123 @@ public class EmployeeProcessor {
         if (employees == null) {
             return rows;
         }
-
-        for (int i = 0; i < employees.size(); i++) {
-            Employee employee = employees.get(i);
-            PayrollRow row = new PayrollRow();
-            row.empId = employee.empId;
-            row.name = employee.name;
-            row.department = employee.department;
-            row.email = employee.email;
-            row.baseSalary = employee.salary;
-            row.hashedId = SecurityUtil.hashIdentifier(employee.empId + employee.email);
-
-            double bonus = 0;
-            if (Objects.equals(employee.department, "Engineering")) {
-                if (employee.yearsOfService > 10) {
-                    if (employee.salary > 100000) {
-                        if (Objects.equals(employee.country, "JP")
-                                || Objects.equals(employee.country, "SG")) {
-                            bonus = employee.salary * 0.18;
-                        } else {
-                            if (employee.salary > 110000) {
-                                bonus = employee.salary * 0.15;
-                            } else {
-                                bonus = employee.salary * 0.12;
-                            }
-                        }
-                    } else {
-                        if (employee.yearsOfService > 12) {
-                            bonus = employee.salary * 0.14;
-                        } else {
-                            bonus = employee.salary * 0.1;
-                        }
-                    }
-                } else if (employee.yearsOfService > 5) {
-                    if (employee.salary > 90000) {
-                        bonus = employee.salary * 0.1;
-                    } else {
-                        bonus = employee.salary * 0.08;
-                    }
-                } else {
-                    bonus = employee.salary * 0.05;
-                }
-            } else if (Objects.equals(employee.department, "Finance")) {
-                if (employee.yearsOfService > 5) {
-                    if (employee.salary > 80000) {
-                        bonus = employee.salary * 0.09;
-                    } else {
-                        bonus = employee.salary * 0.07;
-                    }
-                } else {
-                    bonus = employee.salary * 0.04;
-                }
-            } else if (Objects.equals(employee.department, "Sales")) {
-                if (employee.yearsOfService > 4) {
-                    bonus = employee.salary * 0.11;
-                } else {
-                    bonus = employee.salary * 0.06;
-                }
-            } else {
-                if (employee.yearsOfService > 3) {
-                    bonus = employee.salary * 0.05;
-                } else {
-                    bonus = employee.salary * 0.03;
-                }
-            }
-
-            row.bonus = bonus;
-            row.tax = calculateTax(employee.salary, employee.country);
-            row.netPay = employee.salary + bonus - row.tax;
-            row.grade = grade(employee.salary, employee.yearsOfService, employee.department);
-            row.token = SecurityUtil.sessionToken();
-            rows.add(row);
+        for (Employee employee : employees) {
+            rows.add(createPayrollRow(employee));
         }
         return rows;
     }
 
+    private PayrollRow createPayrollRow(Employee employee) {
+        double bonus = calculateBonus(employee);
+        double tax = calculateTax(employee.getSalary(), employee.getCountry());
+        return new PayrollRow(employee, bonus, tax, grade(employee.getSalary(),
+                employee.getYearsOfService(), employee.getDepartment()));
+    }
+
+    private double calculateBonus(Employee employee) {
+        String department = employee.getDepartment();
+        if (Objects.equals(department, "Engineering")) {
+            return engineeringBonus(employee);
+        }
+        if (Objects.equals(department, "Finance")) {
+            return financeBonus(employee);
+        }
+        if (Objects.equals(department, "Sales")) {
+            return employee.getSalary() * (employee.getYearsOfService() > 4 ? 0.11 : 0.06);
+        }
+        return employee.getSalary() * (employee.getYearsOfService() > 3 ? 0.05 : 0.03);
+    }
+
+    private double engineeringBonus(Employee employee) {
+        double salary = employee.getSalary();
+        int years = employee.getYearsOfService();
+        if (years <= 5) {
+            return salary * 0.05;
+        }
+        if (years <= 10) {
+            return salary * (salary > 90000 ? 0.10 : 0.08);
+        }
+        if (salary <= 100000) {
+            return salary * (years > 12 ? 0.14 : 0.10);
+        }
+        if (Objects.equals(employee.getCountry(), "JP")
+                || Objects.equals(employee.getCountry(), "SG")) {
+            return salary * 0.18;
+        }
+        return salary * (salary > 110000 ? 0.15 : 0.12);
+    }
+
+    private double financeBonus(Employee employee) {
+        double salary = employee.getSalary();
+        if (employee.getYearsOfService() <= 5) {
+            return salary * 0.04;
+        }
+        return salary * (salary > 80000 ? 0.09 : 0.07);
+    }
+
     private double calculateTax(double salary, String country) {
         if (Objects.equals(country, "IN")) {
-            if (salary > 100000) {
-                return salary * 0.3;
-            } else if (salary > 70000) {
-                return salary * 0.2;
-            } else {
-                return salary * 0.1;
-            }
+            return salary * (salary > 100000 ? 0.30 : salary > 70000 ? 0.20 : 0.10);
         }
         if (Objects.equals(country, "US")) {
-            if (salary > 100000) {
-                return salary * 0.28;
-            } else if (salary > 70000) {
-                return salary * 0.18;
-            } else {
-                return salary * 0.12;
-            }
+            return salary * (salary > 100000 ? 0.28 : salary > 70000 ? 0.18 : 0.12);
         }
         if (Objects.equals(country, "SG")) {
             return salary * 0.15;
         }
         if (Objects.equals(country, "JP")) {
-            return salary * 0.2;
+            return salary * 0.20;
         }
-        return salary * 0.1;
+        return salary * 0.10;
     }
 
     private String grade(double salary, int years, String department) {
         if (salary > 100000) {
-            if (years > 8) {
-                if (Objects.equals(department, "Engineering")) {
-                    return "L5";
-                } else {
-                    return "L4";
-                }
-            } else {
-                return "L4";
-            }
-        } else if (salary > 80000) {
-            if (years > 5) {
-                return "L3";
-            } else {
-                return "L2";
-            }
-        } else if (salary > 60000) {
-            return "L2";
-        } else {
-            return "L1";
+            return years > 8 && Objects.equals(department, "Engineering") ? "L5" : "L4";
         }
+        if (salary > 80000) {
+            return years > 5 ? "L3" : "L2";
+        }
+        return salary > 60000 ? "L2" : "L1";
     }
 
     public static class PayrollRow {
-        public String empId;
-        public String name;
-        public String email;
-        public String department;
-        public double baseSalary;
-        public double bonus;
-        public double tax;
-        public double netPay;
-        public String grade;
-        public String hashedId;
-        public String token;
+        private final String empId;
+        private final String name;
+        private final String email;
+        private final String department;
+        private final double baseSalary;
+        private final double bonus;
+        private final double tax;
+        private final double netPay;
+        private final String grade;
+        private final String hashedId;
+        private final String token;
+
+        PayrollRow(Employee employee, double bonus, double tax, String grade) {
+            this.empId = employee.getEmpId();
+            this.name = employee.getName();
+            this.email = employee.getEmail();
+            this.department = employee.getDepartment();
+            this.baseSalary = employee.getSalary();
+            this.bonus = bonus;
+            this.tax = tax;
+            this.netPay = employee.getSalary() + bonus - tax;
+            this.grade = grade;
+            this.hashedId = SecurityUtil.hashIdentifier(employee.getEmpId() + employee.getEmail());
+            this.token = SecurityUtil.sessionToken();
+        }
+
+        public String getEmpId() { return empId; }
+        public String getName() { return name; }
+        public String getEmail() { return email; }
+        public String getDepartment() { return department; }
+        public double getBaseSalary() { return baseSalary; }
+        public double getBonus() { return bonus; }
+        public double getTax() { return tax; }
+        public double getNetPay() { return netPay; }
+        public String getGrade() { return grade; }
+        public String getHashedId() { return hashedId; }
+        public String getToken() { return token; }
     }
 }

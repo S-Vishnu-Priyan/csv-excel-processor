@@ -20,14 +20,14 @@ public class CsvEmployeeReader {
              CSVParser parser = CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build().parse(reader)) {
             for (CSVRecord record : parser) {
                 Employee employee = new Employee();
-                employee.empId = record.get("empId");
-                employee.name = record.get("name");
-                employee.email = record.get("email");
-                employee.department = record.get("department");
-                employee.salary = Double.parseDouble(record.get("salary"));
-                employee.yearsOfService = Integer.parseInt(record.get("yearsOfService"));
-                employee.country = record.get("country");
-                employee.managerEmail = record.get("managerEmail");
+                employee.setEmpId(record.get("empId"));
+                employee.setName(record.get("name"));
+                employee.setEmail(record.get("email"));
+                employee.setDepartment(record.get("department"));
+                employee.setSalary(Double.parseDouble(record.get("salary")));
+                employee.setYearsOfService(Integer.parseInt(record.get("yearsOfService")));
+                employee.setCountry(record.get("country"));
+                employee.setManagerEmail(record.get("managerEmail"));
                 employees.add(employee);
             }
         } catch (IOException | IllegalArgumentException e) {

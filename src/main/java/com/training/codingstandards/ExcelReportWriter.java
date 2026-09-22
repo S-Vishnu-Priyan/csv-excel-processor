@@ -26,9 +26,10 @@ public class ExcelReportWriter {
             int rowIndex = 1;
             for (EmployeeProcessor.PayrollRow payrollRow : rows) {
                 Row row = sheet.createRow(rowIndex++);
-                Object[] values = {payrollRow.empId, payrollRow.name, payrollRow.email, payrollRow.department,
-                        payrollRow.baseSalary, payrollRow.bonus, payrollRow.tax, payrollRow.netPay,
-                        payrollRow.grade, payrollRow.hashedId, payrollRow.token};
+                Object[] values = {payrollRow.getEmpId(), payrollRow.getName(), payrollRow.getEmail(),
+                        payrollRow.getDepartment(), payrollRow.getBaseSalary(), payrollRow.getBonus(),
+                        payrollRow.getTax(), payrollRow.getNetPay(), payrollRow.getGrade(),
+                        payrollRow.getHashedId(), payrollRow.getToken()};
                 for (int i = 0; i < values.length; i++) {
                     Cell cell = row.createCell(i);
                     if (values[i] instanceof Number number) {

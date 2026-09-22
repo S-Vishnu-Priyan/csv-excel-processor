@@ -9,6 +9,9 @@ public class SecurityUtil {
 
     private static final SecureRandom RANDOM = new SecureRandom();
 
+    private SecurityUtil() {
+    }
+
     public static String hashIdentifier(String value) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");

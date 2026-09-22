@@ -1,8 +1,8 @@
 package com.training.codingstandards;
 
 import java.io.File;
-import java.util.logging.Logger;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class App {
 
@@ -22,7 +22,7 @@ public class App {
             excelPath = args[1];
         }
 
-        System.out.println("CSV to Excel processor starting...");
+        LOGGER.info("CSV to Excel processor starting");
         CsvEmployeeReader reader = new CsvEmployeeReader();
         List<Employee> employees = reader.read(csvPath);
 
@@ -36,10 +36,13 @@ public class App {
         DatabaseHelper db = new DatabaseHelper();
         if (args.length > 2 && !employees.isEmpty()) {
             db.auditExport(args[2]);
-            Employee lookedUp = db.findEmployee(args.length > 3 ? args[3] : employees.get(0).empId);
-            LOGGER.info("Lookup completed: " + (lookedUp == null ? "not found" : lookedUp.name));
+            String employeeId = args.length > 3 ? args[3] : employees.get(0).getEmpId();
+            Employee lookedUp = db.findEmployee(employeeId);
+            LOGGER.info(() -> String.format("Lookup completed: %s",
+                    lookedUp == null ? "not found" : lookedUp.getName()));
         }
 
-        System.out.println("Processed " + rows.size() + " employees into " + excelPath);
+        String reportPath = excelPath;
+        LOGGER.info(() -> String.format("Processed %d employees into %s", rows.size(), reportPath));
     }
 }

@@ -16,6 +16,6 @@ class CsvEmployeeReaderTest {
 
         assertFalse(employees.isEmpty());
         assertEquals(8, employees.size());
-        assertEquals("1001", employees.get(0).empId);
+        assertEquals("1001", employees.get(0).getEmpId());
     }
 }

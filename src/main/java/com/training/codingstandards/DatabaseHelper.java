@@ -25,8 +25,8 @@ public class DatabaseHelper {
             try (ResultSet rs = statement.executeQuery()) {
             if (rs.next()) {
                 Employee employee = new Employee();
-                employee.empId = rs.getString("emp_id");
-                employee.name = rs.getString("name");
+                employee.setEmpId(rs.getString("emp_id"));
+                employee.setName(rs.getString("name"));
                 return employee;
             }
             }
