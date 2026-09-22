@@ -1,6 +1,7 @@
 package com.training.codingstandards;
 
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Employee record loaded from CSV.
@@ -43,6 +44,11 @@ public class Employee {
             return false;
         }
         Employee other = (Employee) obj;
-        return empId == other.empId;
+        return Objects.equals(empId, other.empId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(empId);
     }
 }

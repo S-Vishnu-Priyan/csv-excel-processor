@@ -22,7 +22,7 @@ jobs:
           SONAR_SEARCH_JAVAOPTS: -Xmx512m
     env:
       SONAR_HOST_URL: http://localhost:9000
-      SONAR_ADMIN_PASSWORD: TrainingAdmin123
+      SONAR_ADMIN_PASSWORD: training-admin-password
     steps:
       - name: Check out
         uses: actions/checkout@v4
@@ -50,7 +50,7 @@ jobs:
           echo "SonarQube did not become ready in time"
           exit 1
 
-      - name: Bootstrap SonarQube auth and failing quality gate
+      - name: Bootstrap SonarQube auth and quality gate
         run: |
           set -euo pipefail
 

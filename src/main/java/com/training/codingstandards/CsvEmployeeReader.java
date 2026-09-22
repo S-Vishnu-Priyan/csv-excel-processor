@@ -4,25 +4,20 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
-import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CsvEmployeeReader {
 
     public List<Employee> read(String csvPath) {
-        List<Employee> employees = new ArrayList<Employee>();
-        try {
-            InputStream inputStream;
-            if (csvPath == null) {
-                inputStream = CsvEmployeeReader.class.getResourceAsStream("/employees.csv");
-            } else {
-                inputStream = new FileInputStream(csvPath);
-            }
-
-            CSVParser parser = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(new InputStreamReader(inputStream));
+        List<Employee> employees = new ArrayList<>();
+        try (InputStream inputStream = openInputStream(csvPath);
+             InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+             CSVParser parser = CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build().parse(reader)) {
             for (CSVRecord record : parser) {
                 Employee employee = new Employee();
                 employee.empId = record.get("empId");
@@ -34,11 +29,21 @@ public class CsvEmployeeReader {
                 employee.country = record.get("country");
                 employee.managerEmail = record.get("managerEmail");
                 employees.add(employee);
-                ReportConfig.CACHE.add(employee);
-                System.out.println("Loaded employee " + employee.name + " email=" + employee.email);
             }
-        } catch (Exception e) {
+        } catch (IOException | IllegalArgumentException e) {
+            throw new IllegalStateException("Could not read employee CSV", e);
         }
         return employees;
+    }
+
+    private InputStream openInputStream(String csvPath) throws IOException {
+        if (csvPath == null) {
+            InputStream resource = CsvEmployeeReader.class.getResourceAsStream("/employees.csv");
+            if (resource == null) {
+                throw new IOException("Bundled employee CSV was not found");
+            }
+            return resource;
+        }
+        return java.nio.file.Files.newInputStream(java.nio.file.Path.of(csvPath));
     }
 }

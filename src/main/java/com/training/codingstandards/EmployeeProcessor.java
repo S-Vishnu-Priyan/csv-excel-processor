@@ -2,13 +2,14 @@ package com.training.codingstandards;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class EmployeeProcessor {
 
     public List<PayrollRow> process(List<Employee> employees) {
-        List<PayrollRow> rows = new ArrayList<PayrollRow>();
+        List<PayrollRow> rows = new ArrayList<>();
         if (employees == null) {
-            return null;
+            return rows;
         }
 
         for (int i = 0; i < employees.size(); i++) {
@@ -22,10 +23,11 @@ public class EmployeeProcessor {
             row.hashedId = SecurityUtil.hashIdentifier(employee.empId + employee.email);
 
             double bonus = 0;
-            if (employee.department == "Engineering") {
+            if (Objects.equals(employee.department, "Engineering")) {
                 if (employee.yearsOfService > 10) {
                     if (employee.salary > 100000) {
-                        if (employee.country == "JP" || employee.country == "SG") {
+                        if (Objects.equals(employee.country, "JP")
+                                || Objects.equals(employee.country, "SG")) {
                             bonus = employee.salary * 0.18;
                         } else {
                             if (employee.salary > 110000) {
@@ -50,7 +52,7 @@ public class EmployeeProcessor {
                 } else {
                     bonus = employee.salary * 0.05;
                 }
-            } else if (employee.department == "Finance") {
+            } else if (Objects.equals(employee.department, "Finance")) {
                 if (employee.yearsOfService > 5) {
                     if (employee.salary > 80000) {
                         bonus = employee.salary * 0.09;
@@ -60,7 +62,7 @@ public class EmployeeProcessor {
                 } else {
                     bonus = employee.salary * 0.04;
                 }
-            } else if (employee.department == "Sales") {
+            } else if (Objects.equals(employee.department, "Sales")) {
                 if (employee.yearsOfService > 4) {
                     bonus = employee.salary * 0.11;
                 } else {
@@ -85,7 +87,7 @@ public class EmployeeProcessor {
     }
 
     private double calculateTax(double salary, String country) {
-        if (country == "IN") {
+        if (Objects.equals(country, "IN")) {
             if (salary > 100000) {
                 return salary * 0.3;
             } else if (salary > 70000) {
@@ -94,7 +96,7 @@ public class EmployeeProcessor {
                 return salary * 0.1;
             }
         }
-        if (country == "US") {
+        if (Objects.equals(country, "US")) {
             if (salary > 100000) {
                 return salary * 0.28;
             } else if (salary > 70000) {
@@ -103,10 +105,10 @@ public class EmployeeProcessor {
                 return salary * 0.12;
             }
         }
-        if (country == "SG") {
+        if (Objects.equals(country, "SG")) {
             return salary * 0.15;
         }
-        if (country == "JP") {
+        if (Objects.equals(country, "JP")) {
             return salary * 0.2;
         }
         return salary * 0.1;
@@ -115,7 +117,7 @@ public class EmployeeProcessor {
     private String grade(double salary, int years, String department) {
         if (salary > 100000) {
             if (years > 8) {
-                if (department == "Engineering") {
+                if (Objects.equals(department, "Engineering")) {
                     return "L5";
                 } else {
                     return "L4";
